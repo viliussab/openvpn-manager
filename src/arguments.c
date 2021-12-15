@@ -1,20 +1,16 @@
 // Standard C libraries
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 // Standard GNU libraries
-
 #include <argp.h>
 
 // Local headers
-
 #include "arguments.h"
 #include "error_handle.h"
 
 // Program
-
 const char *argp_program_version = "openvpn-manager 1.0.0";
 
 // documentation string that will be displayed in the help section.

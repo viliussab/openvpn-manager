@@ -1,7 +1,13 @@
-#include "client.h"
+// Standard C libraries
 #include <stdlib.h>
+// Standard GNU libraries
+
+// OpenWRT libraries
+
+// Local headers
+#include "client.h"
 #include "../error_handle.h"
-// Helper functions
+
 static int read_token(char* token, char* out_val, int out_len);
 static int parse_client_list(Client* out_clients, int* out_size, char* token, const char* delimiters, const char* starting_string, const char* terminating_string);
 static int parse_routing_table(Client* out_clients, int* out_size, char* token, const char* delimiters, const char* starting_string, const char* terminating_string);
@@ -181,34 +187,3 @@ static void join_clients(Client* new, int* out_n, Client* client_list, int list_
     }
     *out_n = count;
 }
-// void free_clients(Client* clients, int size)
-// {
-//     for (int i = 0; i < size; i++) {
-//         free_client(clients[i]);
-//     }
-// }
-
-// void free_client(Client c)
-// {
-//     if (c.common_name != NULL) {
-//         free(c.common_name);
-//     }
-//     if (c.full_addr != NULL) {
-//         free(c.full_addr);
-//     }
-//     if (c.virtual_addr != NULL) {
-//         free(c.virtual_addr);
-//     }
-//     if (c.bytes_sent != NULL) {
-//         free(c.bytes_sent);
-//     }
-//     if (c.bytes_received != NULL) {
-//         free(c.bytes_received);
-//     }
-//     if (c.connected_since != NULL) {
-//         free(c.connected_since);
-//     }
-//     if (c.last_reference != NULL) {
-//         free(c.last_reference);
-//     }
-// }

@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <signal.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 // Standard GNU libraries
 
 // OpenWRT libraries
@@ -14,25 +17,14 @@
 #include "manager/socket.h"
 #include "manager/client.h"
 
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/socket.h>
-#include <stdlib.h>
-#include <netinet/in.h>
-#include <string.h>
-
-int interrupt = 0;
-void term_proc(int signo) 
-{
-    fprintf(stdout, "Received signal: %d\n", signo);
-    interrupt = 1;
-}
-
 int main(int argc, char *argv[])
 {
     int socket = 0;
     int port = 5410;
     struct ubus_context *ctx;
+
+    // Sleep so connection to management system
+    sleep(4);
 
     // Apply custom name for the process given by arguments
     openvpn_object.name = "manonorimaspavadinimas";
@@ -57,5 +49,6 @@ int main(int argc, char *argv[])
 
     return 0;
 error:
+    if (ctx != NULL) {ubus_free(ctx);}
     return 1;
 }

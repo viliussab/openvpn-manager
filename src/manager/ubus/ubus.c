@@ -1,12 +1,15 @@
-#include "ubus.h"
+// Standard C libraries
+#include <stdio.h>
+// Standard GNU libraries
 
+// OpenWRT libraries
 #include <libubus.h>
 #include <libubox/blobmsg_json.h>
-#include <stdio.h>
+// Local headers
+#include "ubus.h"
 #include "../client.h"
 #include "../socket.h"
 #include "../../error_handle.h"
-
 
 int g_socket = 0;
 

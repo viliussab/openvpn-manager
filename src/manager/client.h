@@ -12,7 +12,5 @@ struct Client {
 } typedef Client;
 
 int parse_server_response(Client* out_clients, int* out_n, char* server_response);
-// void free_clients(Client* clients, int size);
-// void free_client(Client c);
 
 #endif

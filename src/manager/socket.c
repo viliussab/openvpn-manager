@@ -1,10 +1,15 @@
+// Standard C libraries
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
+// Standard GNU libraries
 
+// OpenWRT libraries
+
+// Local headers
 #include "../error_handle.h"
 
 int socket_connect(int port, int* out_socket)
