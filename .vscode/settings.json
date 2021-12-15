@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "*.nse": "lua",
+        "*.init": "shellscript",
+        "ubus.h": "c",
+        "libubus.h": "c",
+        "client.h": "c",
+        "error_handle.h": "c",
+        "string": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
+}

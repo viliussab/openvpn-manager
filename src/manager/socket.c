@@ -26,7 +26,7 @@ int socket_connect(int port, int* out_socket)
     // Connect to the socket
     check(connect(sckt, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) >= 0,
         "Connection to socket failed");
-        
+
     *out_socket = sckt;
 
     return 0;
@@ -40,10 +40,22 @@ int send_command(char** out_buf, int buf_len, int socket, const char* COMMAND)
 
     check(send(socket, COMMAND, strlen(COMMAND), 0) >= 0, "Error sending to socket");
     debug("command sent: %s", COMMAND);
-    usleep(250000);
-
+    usleep(2500000);
     check(read(socket, buffer, 1024) >= 0, "Error reading socket");
     snprintf(out_buf, buf_len, "%s", buffer);
+
+    return 0;
+error:
+    return 1;
+}
+
+int send_command_no_output(int socket, const char* COMMAND)
+{
+    char buffer[1024];
+    check(send(socket, COMMAND, strlen(COMMAND), 0) >= 0, "Error sending to socket");
+    debug("command sent: %s", COMMAND);
+    usleep(250000);
+    debug("woke up");
 
     return 0;
 error:
