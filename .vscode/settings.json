@@ -6,7 +6,10 @@
         "libubus.h": "c",
         "client.h": "c",
         "error_handle.h": "c",
-        "string": "c"
+        "string": "c",
+        "arguments.h": "c",
+        "stdlib.h": "c",
+        "socket.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

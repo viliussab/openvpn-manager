@@ -7,17 +7,12 @@
 #include "../socket.h"
 #include "../../error_handle.h"
 
-static struct Connection {
-	int socket;
-	int port;
-} typedef Connection;
 
-Connection conn = {0};
+int g_socket = 0;
 
-void set_connection(int socket, int port)
+void set_connection(int socket)
 {
-	conn.socket = socket;
-	conn.port = port;
+	g_socket = socket;
 }
 
 static int server_status(struct ubus_context *ctx, struct ubus_object *obj,
@@ -29,19 +24,13 @@ static int server_client_remove(struct ubus_context *ctx, struct ubus_object *ob
 		      struct blob_attr *msg);
 
 
-/*
- * The enumaration array is used to specifie many arguments does
- * the remove function take
- *  */
+// Argument count for ubus remove function
 enum {
     CLIENT_ID_VALUE,
     __DELETE_MAX,
 };
 
-/*
- * This policy structure is used to determines the type of the arguments that can go into remove ubus function
- * For now, it can take the client id it wants to shut down
- * */
+// Arguments description needed for ubus remove function
 static const struct blobmsg_policy remove_policy[] = {
     [CLIENT_ID_VALUE] = { 
         .name = "Client Common name",
@@ -49,35 +38,27 @@ static const struct blobmsg_policy remove_policy[] = {
     },
 };
 
-/*
- * All of the available method that can be called to
- * this ubus service.
- * */
+// Ubus method declarations
 static const struct ubus_method openvpn_methods[] = {
     UBUS_METHOD_NOARG("status", server_status),
     UBUS_METHOD("removeclient", server_client_remove, remove_policy)
 };
 
-/*
- * This structure is used to define the type of our object with methods.
- * */
+// Ubus object type
 static struct ubus_object_type openvpn_object_type = UBUS_OBJECT_TYPE("openvpn_server", openvpn_methods);
 
+// An actual ubus object
 struct ubus_object openvpn_object = {
-    .name = "openvpn_servakas",
+    .name = "openvpn_name_fallback",
     .type = &openvpn_object_type,
     .methods = openvpn_methods,
     .n_methods = ARRAY_SIZE(openvpn_methods),
 };
 
-
-
 static int server_status(struct ubus_context *ctx, struct ubus_object *obj,
 		      struct ubus_request_data *req, const char *method,
 		      struct blob_attr *msg)
 {
-	int socket = 0;
-    int port = 5410;
     char buffer[1024];
     Client clients[255];
     int n = 0;
@@ -85,15 +66,14 @@ static int server_status(struct ubus_context *ctx, struct ubus_object *obj,
 	void *tbl;
 	struct blob_buf b = {};
 
-	check(socket_connect(port, &socket) == 0, "Socket connection initialization phase failed");
-	debug("Socket outside connection: %d\n", socket);
+	blob_buf_init(&b, 0);
 
-	check(send_command(&buffer, 1024, socket, "status\r\n") == 0, "Command was not sent successfully");
+	// Send command to socket
+	check(send_command(&buffer, 1024, g_socket, "status\r\n") == 0, "Command was not sent successfully");
 	debug("buffer:\n%s\n", buffer);
 	parse_server_response(clients, &n, buffer);
 
-	blob_buf_init(&b, 0);
-
+	// Create blob message
 	arr = blobmsg_open_array(&b, "Clients");
 	for (int i = 0; i < n; i++) {
 		char string_name[64];
@@ -112,6 +92,7 @@ static int server_status(struct ubus_context *ctx, struct ubus_object *obj,
 	}
 	blobmsg_close_table(&b, arr);
 
+	// Send reply & cleanup
 	ubus_send_reply(ctx, req, b.head);
 	blob_buf_free(&b);
 
@@ -127,32 +108,26 @@ static int server_client_remove(struct ubus_context *ctx, struct ubus_object *ob
 		      struct ubus_request_data *req, const char *method,
 		      struct blob_attr *msg)
 {
-	int socket = 0;
-	int port = 5410;
 	char kill_cmd[64];
+	char buffer[1024];
 	struct blob_attr *tb[__DELETE_MAX];
 	struct blob_buf b = {};
 
+	// Parse user input
 	blobmsg_parse(remove_policy, __DELETE_MAX, tb, blob_data(msg), blob_len(msg));
 	if (!tb[CLIENT_ID_VALUE])
 		return UBUS_STATUS_INVALID_ARGUMENT;
-
 	const char *reply = blobmsg_get_string(tb[CLIENT_ID_VALUE]);	
 
+	// Send kill command to socket terminal
 	snprintf(kill_cmd, 64, "kill %s\r\n", reply);
-	debug("kill command generated: \"%s\"", kill_cmd);
-	check(socket_connect(port, &socket) == 0, "Socket connection initialization phase failed");
-	debug("Socket outside connection: %d\n", socket);
-
-
-	check(send_command_no_output(socket, kill_cmd) == 0, "Command was not sent successfully");
-	debug("Does this reach?");
+	check(send_command(buffer, 1024, g_socket, kill_cmd) == 0, "Command was not sent successfully");
 	
+	// Generate ubus response
 	blob_buf_init(&b, 0);
-	blobmsg_add_string(&b, "Reply", "Success");
+	blobmsg_add_string(&b, "Reply", buffer);
 	ubus_send_reply(ctx, req, b.head);
 	blob_buf_free(&b);
-
 	return 0;
 error:
 	blobmsg_add_string(&b, "Reply", "Failed");
