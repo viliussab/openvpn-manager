@@ -15,18 +15,6 @@ static void join_clients(Client* new, int* out_n, Client* client_list, int list_
 
 #define DELIMITERS "\n,"
 
-// Please refer to the common openvpn management output:
-// >INFO:OpenVPN Management Interface Version 3 -- type 'help' for more info
-// OpenVPN CLIENT LIST
-// Updated,2021-12-09 10:34:40
-// Common Name,Real Address,Bytes Received,Bytes Sent,Connected Since
-// 192.168.1.214,192.168.1.215:56895,22372,10185,2021-12-09 10:10:50
-// ROUTING TABLE
-// Virtual Address,Common Name,Real Address,Last Ref
-// 10.8.0.6,192.168.1.214,192.168.1.215:56895,2021-12-09 10:34:18
-// GLOBAL STATS
-// Max bcast/mcast queue length,0
-// END
 int parse_server_response(Client* out_clients, int* out_n, char* server_response)
 {
     char* str = strdup(server_response);
@@ -85,9 +73,6 @@ error:
     return 1;
 }
 
-// Common Name,Real Address,Bytes Received,Bytes Sent,Connected Since -- Header, ignore
-// 192.168.1.214,192.168.1.215:56895,22372,10185,2021-12-09 10:10:50
-// 192.168.1.214,192.168.1.215:56895,22372,10185,2021-12-09 10:10:50
 static int parse_client_list(Client* out_clients, int* out_size, char* token, const char* delimiters, const char* starting_string, const char* terminating_string)
 {
     check(strncmp(token, starting_string, strlen(starting_string)) == 0, "token pointer not correctly set");

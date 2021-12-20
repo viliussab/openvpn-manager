@@ -53,16 +53,3 @@ int send_command(char** out_buf, int buf_len, int socket, const char* COMMAND)
 error:
     return 1;
 }
-
-int send_command_no_output(int socket, const char* COMMAND)
-{
-    char buffer[1024];
-    check(send(socket, COMMAND, strlen(COMMAND), 0) >= 0, "Error sending to socket");
-    debug("command sent: %s", COMMAND);
-    usleep(250000);
-    debug("woke up");
-
-    return 0;
-error:
-    return 1;
-}

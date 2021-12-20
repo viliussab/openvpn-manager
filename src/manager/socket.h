@@ -3,5 +3,4 @@
 
 int socket_connect(int port, int* out_socket);
 int send_command(char** out_buf, int buf_len, int socket, const char* COMMAND);
-int send_command_no_output(int socket, const char* COMMAND);
 #endif
