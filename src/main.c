@@ -19,18 +19,23 @@
 
 int main(int argc, char *argv[])
 {
+    Arguments args = {0};
     int socket = 0;
-    int port = 5410;
     struct ubus_context *ctx;
 
-    // Sleep so connection to management system
-    sleep(4);
+
+
+    // Read argument list
+    check(parse_subscriber_arguments(argc, argv, &args) == 0, "Argument parsing failed");
+
+    // sleep for some time so the openvpn server can start up 
+    sleep(2);
 
     // Apply custom name for the process given by arguments
-    openvpn_object.name = "manonorimaspavadinimas";
+    openvpn_object.name = args.name;
 
     // Fix socket connection
-    check(socket_connect(port, &socket) == 0, "Socket connection initialization phase failed");
+    check(socket_connect(args.port, &socket) == 0, "Socket connection initialization phase failed");
     set_connection(socket);
 
     // run ubus
@@ -44,8 +49,6 @@ int main(int argc, char *argv[])
 
     ubus_free(ctx);
     uloop_done();
-
-    debug("Does this reach?");
 
     return 0;
 error:

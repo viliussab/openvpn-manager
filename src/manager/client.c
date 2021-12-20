@@ -110,6 +110,8 @@ static int parse_client_list(Client* out_clients, int* out_size, char* token, co
         read_token(token, out_clients[count].bytes_sent, sizeof(out_clients[count].bytes_sent));
         ADVANCE_TOKEN();
         read_token(token, out_clients[count].connected_since, sizeof(out_clients[count].connected_since));
+        // Remove trailing \r from the string
+        out_clients[count].connected_since[strcspn(out_clients[count].connected_since, "\r")] = NULL;
         count++;
     }
 
@@ -140,6 +142,8 @@ static int parse_routing_table(Client* out_clients, int* out_size, char* token, 
         read_token(token, out_clients[count].full_addr, sizeof(out_clients[count].full_addr));
         ADVANCE_TOKEN();
         read_token(token, out_clients[count].last_reference, sizeof(out_clients[count].last_reference));
+        // Remove trailing \r from the string
+        out_clients[count].last_reference[strcspn(out_clients[count].last_reference, "\r")] = NULL;
         count++;
     }
 

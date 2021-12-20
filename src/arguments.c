@@ -36,7 +36,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 
     char *temp;
     switch (key) {
-    case 'u':
+    case 'n':
         arguments->name = arg;
         break;
     case 'p':
